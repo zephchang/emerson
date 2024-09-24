@@ -1,24 +1,14 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.css'; // Add this line to import the CSS
+import { BookPanel } from './components/books';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app flex flex-row h-screen">
+      <div className="book-content flex flex-row flex-grow">
+        <BookPanel />
+      </div>
+      <div className="chat-panel w-1/3  bg-yellow-100">chat panel</div>
     </div>
   );
 }
