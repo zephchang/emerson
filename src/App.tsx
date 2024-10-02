@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css'; // Add this line to import the CSS
 import { BookPanel } from './components/bookPanel';
 import { ChatPanel } from './components/chatPanel';
+
 function App() {
   return (
     <div className="app flex flex-row h-screen">

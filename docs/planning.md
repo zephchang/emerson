@@ -18,4 +18,12 @@ Ok I'm pissed off at the streamlit version - it's just no good. let's do this fu
 
 > get python to import json [done]
 
-> get json to upload to supabase
+> get json to upload to supabase [done]
+
+> Get rewrite done where we can pull from supabase [done]
+
+> setup a backend using python [done]
+
+> Let's get the paragraphs into the UI
+
+> And then go back and do kant's full prologuea

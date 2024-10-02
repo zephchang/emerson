@@ -1,79 +1,58 @@
-import json
-from supabase import create_client, Client
-import raw_text
-from dotenv  import load_dotenv
-import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
-from openai import OpenAI
-from tenacity import retry, stop_after_attempt, wait_exponential
+from supabase import create_client, Client
+from dotenv import load_dotenv
+import os
 
-client = OpenAI()
+load_dotenv()
 
-env_path = Path(__file__).parents[1] / 'keys.env'
-load_dotenv(dotenv_path=env_path)
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
-url: str = os.getenv("SUPABASE_URL")
-key: str = os.getenv("SUPABASE_KEY")
+current_dir = Path(__file__).resolve().parent
+project_root = current_dir.parent
+env_path = project_root / 'keys.env'
+load_dotenv(env_path)
 
-supabase: Client = create_client(url, key)
-
-
-# LOAD BOOK
-def load_book(raw_text, title, context,):
-    
-    for_supa = {
-        "title": title,
-        "context": context,
-        "raw_text": split_prep(raw_text)
-    }
-
-    response = supabase.table('books').insert(for_supa).execute()
-
-    if response.data:
-        print("yay book inserted")
-    else: 
-        print(" oh no book not inserted supabase sad")
-
-def split_prep(text):
-    p_list = [p.strip() for p in text.split("\n") if p.strip()]
-    return p_list
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
+print("ANYTHING?", supabase_url, supabase_key)
 
 
-# REWRITE BOOK
+supabase: Client = create_client(supabase_url, supabase_key)
 
-@retry(stop=stop_after_attempt(5), 
-       wait=wait_exponential(multiplier=1, min=4, max=10),
-       after=lambda retry_state: print("Exception raised: retrying...") if retry_state.outcome.failed else None)
-def rewrite_p(paragraph):
-    translation = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": f"Please rewrite the following passage to make the language easier to understand for a modern reader. Give your answer delimited by ***. Format your response as: 'Rewrite — ***[put your rewrite here]***'\n\n passage: {paragraph}"}],
-            max_tokens=4000)
-    translation_content = translation.choices[0].message.content
-    parts = translation_content.split('***')
-    if len(parts) > 1:
-        return parts[1]  # This is the text between the first pair of '***'
-    else:
-        return "No text found between the delimiters" 
+@app.get("/")
+async def root():
+    return {"message": "FastAPI is working wow this is pretty cool!"}
 
-def rewrite_content(content_id):
-    response = supabase.table('books').select('id, title, raw_text').eq('id', content_id).execute()
 
-    if not response.data:
-        print("BOOK NOT FOUND - SUPABASE ERROR ")
+@app.get("/test_supabase")
+async def test_supabase():
+    try:
+        # Attempt to fetch a single row from the 'books' table
+        response = supabase.table("books").select("*").limit(1).execute()
+        return {"message": "Supabase connection successful", "data": response.data}
+    except Exception as e:
+        return {"error": f"Supabase connection failed: {str(e)}"}
 
-    supa_content = response.data[0]
-    
-    raw_text = supa_content['raw_text']
+@app.get("/api/books/{book_uuid}")
+async def fetch_entry(book_uuid: str): #So this is a RESTFUL API call. The expectation is that we are going to recieve a URL in this kind of hierarchical format where the different directories repersent some kind of request tree. And we can also have paramaters coming in as ? that are more like adjetives than nouns or categories. 
+    response = supabase.table("books").select("*").eq("uuid",book_uuid).execute()
 
-    rewrite_text = []
-    for p in raw_text:
-        simplified_p = rewrite_p(p)
-        rewrite_text.append(simplified_p)
+    if len(response.data) == 0:
+        return {"error": "Entry not found"}
 
-    update_response = supabase.table('books').update({'rewrite_text': rewrite_text}).eq('id', content_id).execute()
+    print("THIS IS RESPONSE.DATA\n\n\n", response.data[0])
 
-    if update_response.data:
-        print(f"Book with ID {content_id} succesfully updated with rewritten text")
-    else: 
-        print(f"Failed to update book. Error: {update_response}")
+    return response.data[0]  #supabase returns the entire row for that book
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
