@@ -6,7 +6,7 @@ import { ChatPanel } from './components/chatPanel';
 function App() {
   return (
     <div className="app flex flex-row h-screen">
-      <div className="book-content flex flex-row flex-grow">
+      <div className="book-content flex flex-row w-2/3">
         <BookPanel />
       </div>
       <div className="chat-panel w-1/3  bg-yellow-100">

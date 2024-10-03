@@ -3,8 +3,8 @@ const API_BASE_URL = 'http://localhost:8000';
 interface BookEntry {
   uuid: string;
   title: string;
-  raw_text: string;
-  rewritten_text: string;
+  raw_text: string[];
+  rewritten_text: string[];
 }
 
 export async function fetchEntry(book_uuid: string): Promise<BookEntry> {

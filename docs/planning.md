@@ -26,4 +26,11 @@ Ok I'm pissed off at the streamlit version - it's just no good. let's do this fu
 
 > Let's get the paragraphs into the UI
 
-> And then go back and do kant's full prologuea
+> And then go back and do kant's full prologuea [done]
+
+> OK so what are we looking for here?
+> well we want to have paragraphs that are indentend somehow we have a list of paragraphs. And we want them to line up left to right. How to do that? In the other one we set the abstract height but that's nto really ideal. One option is to have a grid but I don't like that either because highlighting won't work. Really I want divs where the div height of each is capped at the corresponding div height. Hmmm
+
+> Ok this is kind of a shitshow to do well. Turns out maybe my dumb implementation from v1 was the best one. Let's have the raw paragraphs be in divs normal, etc. and then we are going to have some JS come in and reset the div sizes for the rewritten text to be equal to the height of the corresponding divs on the raw side.
+
+and maybe as a bonus feature just have on resize window we re-run the js.
