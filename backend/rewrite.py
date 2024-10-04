@@ -59,7 +59,7 @@ def rewrite_p(paragraph):
         return "No text found between the delimiters" 
 
 def rewrite_content(content_uuid):
-    response = supabase.table('books').select('uuid, title, raw_text').eq('id', content_uuid).execute()
+    response = supabase.table('books').select('uuid, title, raw_text').eq('uuid', content_uuid).execute()
 
     if not response.data:
         print("BOOK NOT FOUND - SUPABASE ERROR ")
@@ -68,18 +68,19 @@ def rewrite_content(content_uuid):
     
     raw_text = supa_content['raw_text']
 
-    rewrite_text = []
+    rewritten_text = []
+    k = 1
     for p in raw_text:
+        print("PROGRESS:",k,"/",len(raw_text))
         simplified_p = rewrite_p(p)
-        rewrite_text.append(simplified_p)
+        rewritten_text.append(simplified_p)
+        k+=1
 
-    print(rewrite_text)
-
-    update_response = supabase.table('books').update({'rewrite_text': rewrite_text}).eq('id', content_uuid).execute()
+    update_response = supabase.table('books').update({'rewritten_text': rewritten_text}).eq('uuid', content_uuid).execute()
 
     if update_response.data:
         print(f"Book with ID {content_uuid} succesfully updated with rewritten text")
     else: 
         print(f"Failed to update book. Error: {update_response}")
 
-
+rewrite_content("1394e51a-93c1-46fd-85a6-47f1eea9af1e")

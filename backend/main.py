@@ -23,8 +23,6 @@ load_dotenv(env_path)
 
 supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_KEY")
-print("ANYTHING?", supabase_url, supabase_key)
-
 
 supabase: Client = create_client(supabase_url, supabase_key)
 
@@ -48,8 +46,6 @@ async def fetch_entry(book_uuid: str): #So this is a RESTFUL API call. The expec
 
     if len(response.data) == 0:
         return {"error": "Entry not found"}
-
-    print("THIS IS RESPONSE.DATA\n\n\n", response.data[0])
 
     return response.data[0]  #supabase returns the entire row for that book
 
