@@ -34,3 +34,9 @@ Ok I'm pissed off at the streamlit version - it's just no good. let's do this fu
 > Ok this is kind of a shitshow to do well. Turns out maybe my dumb implementation from v1 was the best one. Let's have the raw paragraphs be in divs normal, etc. and then we are going to have some JS come in and reset the div sizes for the rewritten text to be equal to the height of the corresponding divs on the raw side.
 
 and maybe as a bonus feature just have on resize window we re-run the js.
+
+> get the column set up [done]
+
+> Style both panels in a way I like [done (ish)] [done]
+
+> Get the paragraphs to line up [done]

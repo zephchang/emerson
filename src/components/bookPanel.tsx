@@ -9,21 +9,29 @@ function BookPanel() {
 
   useEffect(() => {
     //because loading from a DB is impure, it's proper to have that seperated out from the main body of the component so that we render first before executing the useEffect function
+    const paraStyle = 'pb-4';
+
     const loadContents = async () => {
       try {
         const book_obj = await fetchEntry(
-          '07e2b64d-de41-41d5-b1bd-6c609851c37d'
+          '1394e51a-93c1-46fd-85a6-47f1eea9af1e'
         );
-        const left_paras = book_obj.raw_text.map(
+        const left_paras = book_obj.rewritten_text.map(
           (paragraph: string, index: number) => (
-            <div key={`paragraph-${index}`}>
+            <div
+              key={`paragraph-${index}`}
+              className={`book-paragraph ${paraStyle}`}
+            >
               <p>{paragraph}</p>
             </div>
           )
         );
-        const right_paras = book_obj.rewritten_text.map(
+        const right_paras = book_obj.raw_text.map(
           (paragraph: string, index: number) => (
-            <div key={`paragraph-${index}`}>
+            <div
+              key={`paragraph-${index}`}
+              className={`book-paragraph ${paraStyle}`}
+            >
               <p>{paragraph}</p>
             </div>
           )
@@ -39,10 +47,41 @@ function BookPanel() {
     loadContents();
   }, []);
 
+  useEffect(() => {
+    const leftParas = leftColumnRef.current?.querySelectorAll(
+      '.book-paragraph'
+    ) as NodeListOf<HTMLElement> | undefined; //Note this nodeList isn't actually a list it's some kind of object so we have to do Array.from to use it as a list
+    const rightParas = rightColumnRef.current?.querySelectorAll(
+      '.book-paragraph'
+    ) as NodeListOf<HTMLElement> | undefined;
+
+    if (leftParas && rightParas) {
+      leftParas.forEach((leftPara, index) => {
+        const rightPara = rightParas[index];
+        const maxHeight = Math.max(
+          leftPara.offsetHeight,
+          rightPara.offsetHeight
+        );
+        console.log(maxHeight);
+        leftPara.style.height = `${maxHeight}px`;
+        rightPara.style.height = `${maxHeight}px`;
+      });
+    }
+  }, [leftBookContent, rightBookContent]);
+
+  const colStyle = 'pt-10 pl-10 pr-10 text-[17px] bg-white font-serif';
+
   return (
     <>
-      <div className="left-book bg-green-300 w-1/2">{leftBookContent}</div>
-      <div className="right-book bg-blue-300 w-1/2">{rightBookContent}</div>
+      <div
+        ref={leftColumnRef}
+        className={`left-book w-1/2 border-r border-r-black ${colStyle}`}
+      >
+        {leftBookContent}
+      </div>
+      <div ref={rightColumnRef} className={`right-book w-1/2 ${colStyle}`}>
+        {rightBookContent}
+      </div>
     </>
   );
 }
