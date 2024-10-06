@@ -16,7 +16,7 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [interactionMode, setInteractionMode] =
-    useState<InteractionMode>('minis');
+    useState<InteractionMode>('chat');
 
   return (
     <AppContext.Provider
