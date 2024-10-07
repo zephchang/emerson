@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchEntry } from '../api';
-import { useHighlight } from '../hooks/highlight';
+import { useHighlight } from '../hooks/useHighlight';
 
 function BookPanel({
   setHighlightText,

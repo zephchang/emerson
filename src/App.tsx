@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './App.css'; // Add this line to import the CSS
-import { BookPanel } from './components/bookPanel';
-import { ChatPanel } from './components/chatPanel';
-import { MinisPanel } from './components/minisPanel';
+import { BookPanel } from './components/BookPanel';
+import { ChatPanel } from './components/ChatPanel';
+import { MinisPanel } from './components/MinisPanel';
 import { AppContextProvider, useAppContext } from './context/AppContext';
 
 function AppContent() {
