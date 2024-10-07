@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchEntry } from '../api';
 import { useHighlight } from '../hooks/useHighlight';
+import { useAppContext } from '../context/AppContext';
 
 function BookPanel({
   setHighlightText,
@@ -19,6 +20,8 @@ function BookPanel({
   const [buttonVisible, setButtonVisible] = useState(false);
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const [lastHighlight, setLastHighlight] = useState<string>('');
+
+  const { mode } = useAppContext();
   /**
    * Fetches and loads the book content from the API
    * Loads into the rewrittent text (left) and raw text (right)
@@ -94,7 +97,7 @@ function BookPanel({
     if (!buttonVisible) return null;
     return (
       <div
-        className="button-container flex z-50 bg-neutral-100 rounded-md border-[.025px] border-neutral-300 shadow-md"
+        className="button-container flex bg-neutral-100 rounded-md border-[.025px] border-neutral-300 shadow-md min-w-max"
         style={{
           position: 'absolute',
           top: `${buttonPosition.top}px`,
@@ -151,7 +154,14 @@ function BookPanel({
 
   const colStyle = 'pt-10 pl-10 pr-10 text-[17px] bg-white font-serif';
   return (
-    <>
+    <div
+      className={`book-container relative 
+      ${
+        mode === 'chat'
+          ? 'chat-book flex flex-row w-2/3 h-screen overflow-y-auto items-start'
+          : 'minis-book flex flex-row w-2/3 '
+      }`}
+    >
       <div
         ref={leftColumnRef}
         className={`left-book w-1/2 border-r border-r-black ${colStyle}`}
@@ -162,7 +172,7 @@ function BookPanel({
         {rightBookContent}
       </div>
       {renderHighlightButton()}
-    </>
+    </div>
   );
 }
 

@@ -12,9 +12,6 @@ import { useAppContext } from '../context/AppContext';
  * @returns {Object} An object containing the highlight state and button handler
  */
 
-interface MinisPanelProps {
-  setHighlightText: React.Dispatch<React.SetStateAction<string>>;
-}
 export const useHighlight = (
   setHighlightText: React.Dispatch<React.SetStateAction<string>>
 ) => {

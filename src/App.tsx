@@ -15,15 +15,7 @@ function AppContent() {
   console.log(mode);
   return (
     <div className={`app flex flex-row`}>
-      <div
-        className={
-          mode === 'chat'
-            ? 'chat-book flex flex-row w-2/3 h-screen overflow-y-auto items-start'
-            : 'minis-book flex flex-row w-2/3 '
-        }
-      >
-        <BookPanel setHighlightText={setHighlightText} />
-      </div>
+      <BookPanel setHighlightText={setHighlightText} />
       <div className="right-panel w-1/3">
         {mode === 'chat' ? (
           <ChatPanel highlightText={highlightText} />
