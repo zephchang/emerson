@@ -7,7 +7,3 @@ setup the chat divs and mini divs [done]
 setup chat divs [done]
 
 Setup the highlight event listner and the button [done]
-
-Create a button to show up next to highlight
-
-Get the button working

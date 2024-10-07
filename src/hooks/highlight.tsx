@@ -1,17 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 
-export const useHighlight = () => {
-  //initializes a highlight value to access, initiates a keydown listener to set highlight, gives you a button handler to set highlight,
-  const [highlight, setHighlight] = useState('');
-  const { mode, setMode } = useAppContext();
+/**
+ * Custom hook for handling text highlighting functionality.
+ *
+ * This hook provides:
+ * 1. A state for storing the highlighted text
+ * 2. A keyboard event listener for highlighting (Cmd/Ctrl + L)
+ * 3. A button handler for manual highlighting
+ *
+ * @returns {Object} An object containing the highlight state and button handler
+ */
+
+interface MinisPanelProps {
+  setHighlightText: React.Dispatch<React.SetStateAction<string>>;
+}
+export const useHighlight = (
+  setHighlightText: React.Dispatch<React.SetStateAction<string>>
+) => {
+  const { setMode } = useAppContext();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey && event.key === 'l') {
         event.preventDefault();
         const selectedText = window.getSelection()?.toString() || '';
-        setHighlight(selectedText);
+        setHighlightText(selectedText);
         setMode('chat');
       }
     };
@@ -22,9 +36,9 @@ export const useHighlight = () => {
 
   const handleHighButton = () => {
     const selectedText = window.getSelection()?.toString() || '';
-    setHighlight(selectedText);
+    setHighlightText(selectedText);
     setMode('chat');
   };
 
-  return { highlight, handleHighButton };
+  return { handleHighButton };
 };

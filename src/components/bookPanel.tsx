@@ -1,12 +1,29 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchEntry } from '../api';
+import { useHighlight } from '../hooks/highlight';
 
-function BookPanel() {
+function BookPanel({
+  setHighlightText,
+}: {
+  setHighlightText: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  //Load book related state and effects
   const [leftBookContent, setLeftBookContent] = useState<any>(null);
   const [rightBookContent, setRightBookContent] = useState<any>(null);
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const leftColumnRef = useRef<HTMLDivElement>(null);
 
+  const { handleHighButton: highlightButtonHandler } =
+    useHighlight(setHighlightText); //Note: this hook also initiates a keypress listening for cmd-Lf
+
+  //HighlightButton related state and effects
+  const [buttonVisible, setButtonVisible] = useState(false);
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  /**
+   * Fetches and loads the book content from the API
+   * Loads into the rewrittent text (left) and raw text (right)
+   */
   useEffect(() => {
     //because loading from a DB is impure, it's proper to have that seperated out from the main body of the component so that we render first before executing the useEffect function
     const paraStyle = 'pb-4';
@@ -47,6 +64,9 @@ function BookPanel() {
     loadContents();
   }, []);
 
+  /**
+   * Resets all of the paragraph divs so they match heights (so that rewrite and original line up. )
+   */
   useEffect(() => {
     const leftParas = leftColumnRef.current?.querySelectorAll(
       '.book-paragraph'
@@ -62,15 +82,55 @@ function BookPanel() {
           leftPara.offsetHeight,
           rightPara.offsetHeight
         );
-        console.log(maxHeight);
         leftPara.style.height = `${maxHeight}px`;
         rightPara.style.height = `${maxHeight}px`;
       });
     }
   }, [leftBookContent, rightBookContent]);
 
-  const colStyle = 'pt-10 pl-10 pr-10 text-[17px] bg-white font-serif';
+  const renderHighlightButton = () => {
+    if (!buttonVisible) return null;
+    return (
+      <button
+        ref={buttonRef}
+        style={{
+          position: 'absolute',
+          zIndex: 1000,
+          top: `${buttonPosition.top}px`,
+          left: `${buttonPosition.left}px`,
+        }}
+        onClick={highlightButtonHandler}
+      >
+        Ask AI
+      </button>
+    );
+  };
 
+  const handleTextSelection = useCallback(() => {
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      setButtonPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+      });
+      setButtonVisible(true);
+    } else {
+      setButtonVisible(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleTextSelection);
+    document.addEventListener('selectionchange', handleTextSelection);
+    return () => {
+      document.removeEventListener('mouseup', handleTextSelection);
+      document.removeEventListener('selectionchange', handleTextSelection);
+    };
+  }, [handleTextSelection]); //note handleTextSelection is not a function but actually a memoization of a function, so it's pre-calculated and if the dependencies change then we return a new memo
+
+  const colStyle = 'pt-10 pl-10 pr-10 text-[17px] bg-white font-serif';
   return (
     <>
       <div
@@ -82,6 +142,7 @@ function BookPanel() {
       <div ref={rightColumnRef} className={`right-book w-1/2 ${colStyle}`}>
         {rightBookContent}
       </div>
+      {renderHighlightButton()}
     </>
   );
 }
