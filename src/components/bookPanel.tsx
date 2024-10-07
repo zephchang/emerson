@@ -13,13 +13,12 @@ function BookPanel({
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const leftColumnRef = useRef<HTMLDivElement>(null);
 
-  const { handleHighButton: highlightButtonHandler } =
-    useHighlight(setHighlightText); //Note: this hook also initiates a keypress listening for cmd-Lf
+  const { handleHighButton: handleHighButton } = useHighlight(setHighlightText); //Note: this hook also initiates a keypress listening for cmd-Lf
 
   //HighlightButton related state and effects
   const [buttonVisible, setButtonVisible] = useState(false);
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [lastHighlight, setLastHighlight] = useState<string>('');
   /**
    * Fetches and loads the book content from the API
    * Loads into the rewrittent text (left) and raw text (right)
@@ -88,34 +87,56 @@ function BookPanel({
     }
   }, [leftBookContent, rightBookContent]);
 
+  /**
+   * Highlight button functionality below: render highlight button, handle text selection, and add eventlistener
+   */
   const renderHighlightButton = () => {
     if (!buttonVisible) return null;
     return (
-      <button
-        ref={buttonRef}
+      <div
+        className="button-container flex z-50 bg-neutral-100 rounded-md border-[.025px] border-neutral-300 shadow-md"
         style={{
           position: 'absolute',
-          zIndex: 1000,
           top: `${buttonPosition.top}px`,
           left: `${buttonPosition.left}px`,
         }}
-        onClick={highlightButtonHandler}
       >
-        Ask AI
-      </button>
+        <button className="voice-btn py-0.5 px-3 font-sans text-[15px] hover:bg-neutral-200">
+          <span className="text-black">Voice </span>
+          <span className="text-neutral-600">⌘K</span>
+        </button>
+        <button
+          className="ask-ai-btn py-0.5 px-3 font-sans text-[15px] hover:bg-neutral-200"
+          onClick={() => {
+            handleHighButton();
+            setButtonVisible(false);
+          }}
+        >
+          <span className="text-black">Chat </span>
+          <span className="text-neutral-600">⌘L</span>
+        </button>
+      </div>
     );
   };
 
   const handleTextSelection = useCallback(() => {
     const selection = window.getSelection();
-    if (selection && !selection.isCollapsed) {
+    if (!selection) return;
+
+    const highlightedText = selection.toString() || '';
+    if (
+      selection &&
+      !selection.isCollapsed &&
+      highlightedText != lastHighlight
+    ) {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
       setButtonPosition({
         top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        left: rect.right + window.scrollX,
       });
       setButtonVisible(true);
+      setLastHighlight(highlightedText);
     } else {
       setButtonVisible(false);
     }
@@ -123,10 +144,8 @@ function BookPanel({
 
   useEffect(() => {
     document.addEventListener('mouseup', handleTextSelection);
-    document.addEventListener('selectionchange', handleTextSelection);
     return () => {
       document.removeEventListener('mouseup', handleTextSelection);
-      document.removeEventListener('selectionchange', handleTextSelection);
     };
   }, [handleTextSelection]); //note handleTextSelection is not a function but actually a memoization of a function, so it's pre-calculated and if the dependencies change then we return a new memo
 

@@ -7,3 +7,9 @@ setup the chat divs and mini divs [done]
 setup chat divs [done]
 
 Setup the highlight event listner and the button [done]
+
+button should be on mouseup not mousedown
+
+button styling
+
+button right corner
