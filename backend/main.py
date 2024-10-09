@@ -18,7 +18,7 @@ app.add_middleware(
 
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir.parent
-env_path = project_root / 'keys.env'
+env_path = project_root / '.env'
 load_dotenv(env_path)
 
 supabase_url = os.getenv("SUPABASE_URL")

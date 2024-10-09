@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css'; // Add this line to import the CSS
 import { BookPanel } from './components/BookPanel';
 import { ChatPanel } from './components/ChatPanel';
