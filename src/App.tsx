@@ -7,12 +7,11 @@ import { AppContextProvider, useAppContext } from './context/AppContext';
 
 function AppContent() {
   //note we need to do this nested structure because useAppContext needs to be able to find the Provider somewhere in the tree.
-  const { mode, setMode } = useAppContext();
+  const { mode } = useAppContext();
 
   //highlight state for lifted up for usage/consumption by chatPanel.tsx and highlight.tsx
   const [highlightText, setHighlightText] = useState<string>('');
 
-  console.log(mode);
   return (
     <div className={`app flex flex-row`}>
       <BookPanel setHighlightText={setHighlightText} />

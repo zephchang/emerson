@@ -5,11 +5,13 @@ type InteractionMode = 'chat' | 'minis';
 interface AppContextType {
   mode: InteractionMode;
   setMode: (mode: InteractionMode) => void;
+  chatID: string | null;
+  setChatID: (id: string | null) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined); //createContext creates a Context object. That object looks something like { Provider: ReactComponent, Consumer: ReactComponent, displayName: etc.}. Actually these days we don't use Consumer, we just really use provider and send a little monkey (useContext) to search the tree for the provider.
 
-//Note: undfeined is the fallback value (default value) in case we can't find the provider. Little monkey sends back undefined if can't find provider in the tree.
+//Note: undefined is the fallback value (default value) in case we can't find the provider. Little monkey sends back undefined if can't find provider in the tree.
 
 export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
   //this is a wrapper that gets exported to wrap around a function. It's a provider at top level, kind of like a beacon. We create some state and then put it in a beacon which holds the local state. The useContext are little monkeys that run up the tree to grab the local state (value and setter) and then that way anycomponent can access a value or set a value.
@@ -17,10 +19,16 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [interactionMode, setInteractionMode] =
     useState<InteractionMode>('minis');
+  const [chatID, setChatID] = useState<string | null>(null);
 
   return (
     <AppContext.Provider
-      value={{ mode: interactionMode, setMode: setInteractionMode }}
+      value={{
+        mode: interactionMode,
+        setMode: setInteractionMode,
+        chatID: chatID,
+        setChatID: setChatID,
+      }}
     >
       {children}
     </AppContext.Provider>

@@ -54,21 +54,27 @@ export const initializeToDatastore = async () => {
   try {
     const anchors = locateHighlight();
 
-    const { data, error } = await supabase.from('conversations').insert([
-      {
-        start_div: anchors?.startDiv,
-        start_offset: anchors?.startOffset,
-        end_div: anchors?.endDiv,
-        end_offset: anchors?.endOffset,
-        content_type: anchors?.contentType,
-        //will need to add book id eventually
-      },
-    ]);
+    const { data, error } = await supabase
+      .from('conversations')
+      .insert([
+        {
+          start_div: anchors?.startDiv,
+          start_offset: anchors?.startOffset,
+          end_div: anchors?.endDiv,
+          end_offset: anchors?.endOffset,
+          content_type: anchors?.contentType,
+          //will need to add book id eventually
+        },
+      ])
+      .select('id');
+
     if (error) {
       throw error;
     }
+    return data?.[0].id;
   } catch (error) {
     console.error('ERROR:', error);
+    throw error;
   }
 };
 

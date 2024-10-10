@@ -19,7 +19,7 @@ function BookPanel({
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const [lastHighlight, setLastHighlight] = useState<string>('');
 
-  const { mode, setMode } = useAppContext();
+  const { mode, setMode, setChatID } = useAppContext();
   /**
    * LOAD BOOK
    *
@@ -113,8 +113,9 @@ function BookPanel({
         </button>
         <button
           className="ask-ai-btn py-0.5 px-3 font-sans text-[15px] hover:bg-neutral-200"
-          onClick={() => {
-            initializeToDatastore();
+          onClick={async () => {
+            const chatID = await initializeToDatastore();
+            setChatID(chatID);
             setMode('chat');
             setButtonVisible(false);
           }}
@@ -160,7 +161,7 @@ function BookPanel({
   const colStyle = 'pt-10 pl-10 pr-10 text-[17px] bg-white font-serif';
   return (
     <div
-      className={`book-container relative 
+      className={`book-container relative shadow-md
       ${
         mode === 'chat'
           ? 'chat-book flex flex-row w-2/3 h-screen overflow-y-auto items-start'
@@ -169,7 +170,7 @@ function BookPanel({
     >
       <div
         ref={rewrittenRef}
-        className={`rewritten-book w-1/2 border-r border-r-black ${colStyle}`}
+        className={`rewritten-book w-1/2 border-r border-r-neutral ${colStyle}`}
       >
         {rewrittenContent}
       </div>
